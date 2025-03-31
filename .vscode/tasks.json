@@ -12,6 +12,8 @@
           "-L${workspaceFolder}/lib",
           "${workspaceFolder}/main.cpp",
           "${workspaceFolder}/src/glad.c",
+          "${workspaceFolder}/src/ApplyTransformationTriangle.cpp",
+          "${workspaceFolder}/src/CreateBasicTriangle.cpp",
           "-lglfw3dll",
           "-o",
           "${workspaceFolder}/cutable.exe"

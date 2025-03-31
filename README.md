@@ -7,7 +7,7 @@ Este repositório contém exercícios relacionados ao uso do OpenGL.
 Use o seguinte comando para compilar o projeto:
 
 ```bash
-g++ -g -std=c++17 -I include -L lib main.cpp src/glad.c -lglfw3dll
+g++ -g -std=c++17 -I include -L lib main.cpp src/CreateBasicTriangle.cpp src/ApplyTransformationTriangle.cpp src/glad.c -lglfw3dll
 ```
 
 Certifique-se de que as bibliotecas e os arquivos necessários estejam corretamente configurados.

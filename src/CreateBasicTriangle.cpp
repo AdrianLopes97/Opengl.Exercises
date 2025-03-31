@@ -1,6 +1,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <cmath>
+#include "ApplyTransformationTriangle.h"
+#include "CreateBasicTriangle.h"
 
 // Vertex Shader source code
 const char* vertexShaderSource = R"(
@@ -10,8 +13,10 @@ layout (location = 1) in vec3 aColor;
 
 out vec3 vertexColor;
 
+uniform mat4 transform;
+
 void main() {
-    gl_Position = vec4(aPos, 1.0);
+    gl_Position = transform * vec4(aPos, 1.0);
     vertexColor = aColor;
 }
 )";
@@ -102,11 +107,40 @@ void renderTriangle(GLFWwindow* window) {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+
+    // Uniform location in shader
+    int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+
+    // Transformation matrices
+    float translation[4][4], rotation[4][4], scale[4][4], transform[4][4];
+
+    // Transformation parameters
+    float tx = 0.0f, ty = 0.0f, tz = 0.0f; // Translation
+    float angle = 45.0f;                  // Rotation in degrees
+    float sx = 1.0f, sy = 1.0f, sz = 1.0f; // Scale
+
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         // Input
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
+
+        // Update transformation parameters
+        angle += 1.0f; // Increase angle for continuous rotation
+        tx = sin(glfwGetTime()) * 0.5f; // Dynamic translation on the X axis
+        ty = cos(glfwGetTime()) * 0.5f; // Dynamic translation on the Y axis
+
+        // Create transformation matrices
+        createTranslationMatrix(translation, tx, ty, tz);
+        createRotationMatrixZ(rotation, angle);
+        createScaleMatrix(scale, sx, sy, sz);
+
+        // Combine the matrices: transform = scale * rotation * translation
+        multiplyMatrices(transform, scale, rotation);
+        multiplyMatrices(transform, transform, translation);
+
+        // Send the transformation matrix to the shader
+        glUniformMatrix4fv(transformLoc, 1, GL_TRUE, &transform[0][0]);
 
         // Rendering commands
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
